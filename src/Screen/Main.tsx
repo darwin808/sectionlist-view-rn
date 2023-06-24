@@ -7,33 +7,38 @@ import {
   View,
   Dimensions,
 } from "react-native";
-// remove this
+// remove this with actual component
 import { DummyComp } from "./constant";
 
 interface TabHeaderProps {
   onPress: (index: number) => void;
   currentIndex: number;
 }
+interface TabHeaderProps {
+  onPress: (index: number) => void;
+  currentIndex: number;
+}
+
+interface TabItem {
+  id: number;
+  name: string;
+}
+
+const containerWidth = Dimensions.get("window").width;
 const TAB_HEIGHT = 60;
 const STICKY_HEADER_INDEX = 2;
+const TAB_ITEM_START = 4;
 
-const TabHeader = ({ onPress, currentIndex }: TabHeaderProps) => {
-  const containerWidth = Dimensions.get("window").width;
+const TabHeader: React.FC<TabHeaderProps> = ({ onPress, currentIndex }) => {
   const flatListRef = useRef<FlatList<any>>(null);
 
-  const data = [
+  const data: TabItem[] = [
     { id: 4, name: "About" },
     { id: 5, name: "Fund Considerations" },
     { id: 6, name: "Portfolio Allocation" },
     { id: 7, name: "Risks" },
     { id: 8, name: "Documents" },
   ];
-
-  const getItemLayout = (_data: any[] | null | undefined, index: number) => ({
-    length: Dimensions.get("window").width / 3, // Assuming each item occupies 1/3 of the screen width
-    offset: (Dimensions.get("window").width / 3) * index,
-    index,
-  });
 
   const scrollToIndex = (index: number) => {
     flatListRef.current?.scrollToIndex({
@@ -44,7 +49,8 @@ const TabHeader = ({ onPress, currentIndex }: TabHeaderProps) => {
   };
 
   const scrollToActiveTab = () => {
-    const activeIndex = currentIndex - 4;
+    // tabitme starts at 4
+    const activeIndex = currentIndex - TAB_ITEM_START;
     const itemWidth = containerWidth / 3;
     const halfContainerWidth = containerWidth / 2;
     const scrollOffset = itemWidth * activeIndex;
@@ -64,9 +70,13 @@ const TabHeader = ({ onPress, currentIndex }: TabHeaderProps) => {
         data={data}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        getItemLayout={getItemLayout}
+        getItemLayout={(_, index) => ({
+          length: containerWidth / 3,
+          offset: (containerWidth / 3) * index,
+          index,
+        })}
         renderItem={({ item, index }) => {
-          const isActive = currentIndex === index + 4 ? true : false;
+          const isActive = currentIndex === index + 4;
           return (
             <Pressable
               onPress={() => {
@@ -96,9 +106,7 @@ const TabHeader = ({ onPress, currentIndex }: TabHeaderProps) => {
             </Pressable>
           );
         }}
-        keyExtractor={(_item, i) => {
-          return JSON.stringify(i);
-        }}
+        keyExtractor={(_item, i) => JSON.stringify(i)}
         snapToOffsets={data.map((_, index) => (containerWidth / 3) * index)}
         decelerationRate="fast"
         onScrollToIndexFailed={() => {}}
@@ -107,11 +115,61 @@ const TabHeader = ({ onPress, currentIndex }: TabHeaderProps) => {
   );
 };
 
+const FastScrollBtn = ({ onPress }: any) => {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={{
+        position: "absolute",
+        right: 0,
+        bottom: 100,
+        height: 50,
+        width: 50,
+        backgroundColor: "aqua",
+      }}
+    >
+      <Text>Click me</Text>
+    </Pressable>
+  );
+};
+
+//************ PAGE STRUCTURE ************** */
+/*
+---------------------------------------------
+| Section 1 | Section 2 | ...... | Section 5 | <======= 
+---------------------------------------------         ||
+*********************************************         ||
+|                  SECTION 1                 |        ||
+*********************************************         || This will be Sticky Header
+*********************************************         ||
+|                  SECTION 2                 |        ||
+*********************************************         ||
+*********************************************         ||
+|                  SECTION 3                 | <======= 
+*********************************************
+*********************************************
+|                  SECTION 4                 |
+*********************************************
+*********************************************
+|                  SECTION 5                 |
+*********************************************
+*********************************************
+|                  SECTION 6                 |
+*********************************************
+*********************************************
+|                  SECTION 7                 |
+*********************************************
+*********************************************
+|                  SECTION 8                 |
+*********************************************
+*/
+
 const Main = () => {
   const [currentIndex, setcurrentIndex] = useState(0);
   const sectionListRef = useRef(null);
   const showStickyHeader = currentIndex >= STICKY_HEADER_INDEX + 1;
 
+  // main function for going to each section in this screenk
   const gotoSection = (index) => {
     const sectionList = sectionListRef.current;
     sectionList.scrollToLocation({
@@ -122,17 +180,21 @@ const Main = () => {
     });
   };
 
+  // Define sections for the SectionList
   const SECTIONS = [
+    // Section 1 - Grap
     {
       title: "Grap",
       index: 1,
       data: [<DummyComp ht={200} bgColor="yellow" txt={"grap"} />],
     },
+    // Section 2 - CAlc
     {
       title: "CAlc",
       index: 2,
       data: [<DummyComp ht={200} bgColor="red" txt={"calc"} />],
     },
+    // Section 3 - Tabs or Sticky Header
     {
       title: "Tabs",
       index: 3,
@@ -147,40 +209,51 @@ const Main = () => {
         ),
       ],
     },
+    // Section 4 - About
     {
       title: "About",
       index: 4,
       data: [<DummyComp ht={300} bgColor="aqua" txt={"about"} />],
     },
+    // Section 5 - Fund Considerations
     {
       title: "Fund consi",
       index: 5,
       data: [<DummyComp ht={300} bgColor="brown" txt={"FUnds"} />],
     },
+    // Section 6 - Portfolio Allocation
     {
       title: "Portfolio",
       index: 6,
       data: [<DummyComp ht={900} bgColor="#fff992" txt={"Portfolio"} />],
     },
+    // Section 7 - Risks
     {
       title: "RIsks",
       index: 7,
       data: [<DummyComp ht={900} bgColor="#696969" txt={"risks"} />],
     },
+    // Section 8 - Documents
     {
       title: "Document",
       index: 8,
       data: [<DummyComp ht={900} bgColor="#f9f8" txt={"docs"} />],
     },
   ];
+
   return (
     <View style={{ flex: 1, width: "100%" }}>
+      {/* HEADER SECTION */}
+      {/* Render the TabHeader component as the sticky header if the condition is met */}
       {showStickyHeader && (
         <TabHeader
           currentIndex={currentIndex}
           onPress={(e) => gotoSection(e)}
         />
       )}
+
+      {/* BODY */}
+      {/* Render the SectionList */}
       <SectionList
         ref={sectionListRef}
         scrollEventThrottle={100}
@@ -194,17 +267,26 @@ const Main = () => {
           minimumViewTime: 10,
           itemVisiblePercentThreshold: 10,
         }}
-        // keyExtractor={({ props }) => {
-        //   console.log(props);
-        //   // return JSON.stringify(key);
-        // }}
         sections={SECTIONS}
         renderItem={({ item }) => {
           return <View>{item}</View>;
         }}
       />
+
+      {/* FOOTER SECTION */}
+      {/* Render the FastScrollBtn component if the currentIndex is less than 8 */}
+      {currentIndex < 8 && (
+        <FastScrollBtn
+          onPress={() => {
+            if (currentIndex <= 3) {
+              gotoSection(3);
+            } else {
+              currentIndex < 8 && gotoSection(currentIndex);
+            }
+          }}
+        />
+      )}
     </View>
   );
 };
-
 export const ProductViewSectionList = React.memo(Main);
