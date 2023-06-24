@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import Main from "./src/Screen/Main";
+import { ProductViewSectionList } from "./src/Screen/Main";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Main />
+      <ProductViewSectionList />
     </View>
   );
 }
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    backgroundColor: "pink",
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },
