@@ -26,7 +26,7 @@ interface TabItem {
 
 const containerWidth = Dimensions.get("window").width;
 const TAB_HEIGHT = 60;
-const STICKY_HEADER_INDEX = 2;
+const STICKY_HEADER_INDEX = 3;
 const TAB_ITEM_START = 4;
 
 const TabHeader: React.FC<TabHeaderProps> = ({ onPress, currentIndex }) => {
@@ -167,7 +167,7 @@ const FastScrollBtn = ({ onPress }: any) => {
 const Main = () => {
   const [currentIndex, setcurrentIndex] = useState(0);
   const sectionListRef = useRef(null);
-  const showStickyHeader = currentIndex >= STICKY_HEADER_INDEX + 1;
+  const showStickyHeader = currentIndex >= STICKY_HEADER_INDEX;
 
   // main function for going to each section in this screenk
   const gotoSection = (index) => {
