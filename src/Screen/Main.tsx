@@ -170,14 +170,19 @@ const Main = () => {
   const showStickyHeader = currentIndex >= STICKY_HEADER_INDEX;
 
   // main function for going to each section in this screenk
-  const gotoSection = (index) => {
-    const sectionList = sectionListRef.current;
-    sectionList.scrollToLocation({
-      animated: true,
-      itemIndex: 1,
-      viewOffset: 0,
-      sectionIndex: index,
-    });
+  const gotoSection = (index: number) => {
+    //  range is 1 to 8
+    if (index >= 1 && index <= 8) {
+      const sectionList = sectionListRef.current;
+      sectionList.scrollToLocation({
+        animated: true,
+        itemIndex: 1,
+        viewOffset: 0,
+        sectionIndex: index,
+      });
+    } else {
+      console.error("Invalid section index. It must be between 1 and 8.");
+    }
   };
 
   // Define sections for the SectionList
